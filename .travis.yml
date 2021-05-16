@@ -1,0 +1,40 @@
+language: python
+sudo: required
+dist: xenial
+python: 3.7
+
+services: mysql
+
+before_install:
+  - sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
+  - sudo mysql_upgrade -u root -proot
+  - sudo service mysql restart
+  - export DJANGO_SETTINGS_MODULE=MySite.settings_ci
+  - export PIP_USE_MIRRORS=true
+
+install:
+  - pip install -r requirements.txt
+
+before_script:
+  - wget https://repo.mysql.com//mysql-apt-config_0.8.10-1_all.deb
+  - sudo dpkg -i mysql-apt-config_0.8.10-1_all.deb
+  - sudo apt-get update -q
+  - sudo apt-get install -q -y --allow-unauthenticated -o Dpkg::Options::=--force-confnew mysql-server
+  - sudo systemctl restart mysql
+  - sudo mysql_upgrade
+  - mysql --version  
+  - mysql -uroot -proot -e 'CREATE DATABASE IF NOT EXISTS MySite character set UTF8;'
+  - mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -uroot -proot mysql
+
+script:
+  - python -m flake8
+  - find . -maxdepth 1 -type d -not -path './.*' -not -path './mock_cas' -not -path './scripts' -not -path './htmlcov' -not -path '.' | xargs python -m pylint
+  - python -m coverage run manage.py test --debug-mode
+  - python -m coverage report --skip-covered
+  - export DJANGO_SETTINGS_MODULE=MySite.settings_dev; python manage.py migrate
+
+notifications:
+    email: false
+
+after_success:
+    coveralls

@@ -1,0 +1,13 @@
+[run]
+source = .
+omit = 
+    MySite/settings*.py,
+    manage.py,
+    */apps.py,
+    MySite/wsgi.py,
+    MySite/urls.py,
+    mock_cas/*,
+    data_migration/*,
+    auth/authentication.py,
+    drf_cache,
+    pyenv
