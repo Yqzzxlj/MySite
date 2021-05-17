@@ -7,10 +7,27 @@ from .settings import *
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '0jn@1=-wjx6zt)vg7^s9=g-yads8qrwy5*(r#a$*pbf2o11d(h'
 
+# Application definition
+DEV_INSTALLED_APPS = [
+    # 'corsheaders',
+    'debug_toolbar',
+    # 'mock_cas',
+
+    # 'data_migration',
+]
+INSTALLED_APPS.extend(DEV_INSTALLED_APPS)
+
+DEV_MIDDLEWARE = [
+    # 'corsheaders.middleware.CorsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+for middleware in DEV_MIDDLEWARE[::-1]:
+    MIDDLEWARE.insert(0, middleware)
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 INTERNAL_IPS = ['127.0.0.1']
 
 # Database
@@ -21,7 +38,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'MySite',
         'USER': 'root',
-        'PASSWORD': 'root',
+        'PASSWORD': '123456',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
