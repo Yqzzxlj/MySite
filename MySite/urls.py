@@ -19,10 +19,12 @@ from django.conf import settings
 
 API_URLPATTERNS = [
     path('', include('auth.urls')),
+    path('', include('infra.urls')),
 ]
 
 urlpatterns = [
     path('api/', include(API_URLPATTERNS)),
+    path('', include('secure_file.urls')),
 ]
 
 if settings.DEBUG:
@@ -35,4 +37,5 @@ if settings.DEBUG:
         path('api/', include_docs_urls(title='MySite APIs')),
     ]
     urlpatterns.extend(DEBUG_URLPATTERNS)
+    urlpatterns.append(path('mock-cas/', include('mock_cas.urls')))
 

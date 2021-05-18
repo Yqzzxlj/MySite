@@ -38,13 +38,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework',
     'rest_framework_bulk',
     'django_filters',
     "guardian",
+    'django_cas',
 
     'auth.apps.AuthConfig',
+    'infra',
+    'drf_cache',
+    'secure_file',
 ]
+
+AUTH_USER_MODEL = 'mysite_auth.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,19 +61,21 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'auth.middleware.JWTAuthenticationMiddleware',
+    'django_cas.middleware.CASMiddleware',
 ]
 
 ROOT_URLCONF = 'MySite.urls'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+    'django_cas.backends.CASBackend',
     'guardian.backends.ObjectPermissionBackend',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        'auth.authentication.JSONWebTokenAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -75,7 +84,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'UPLOADED_FILES_USE_URL': False,
+    'DEFAULT_PAGINATION_CLASS': 'infra.paginations.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+    'HTML_SELECT_CUTOFF': 100,
     'DATETIME_FORMAT': '%Y年%m月%d日 %H:%M:%S',
     'DATETIME_INPUT_FORMATS': ['%Y年%m月%d日 %H:%M:%S', 'iso-8601'],
 }
@@ -152,12 +165,13 @@ STATIC_URL = '/static/'
 JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
     'JWT_GET_USER_SECRET_KEY': 'auth.utils.get_user_secret_key',
-    'JWT_AUDIENCE': 'MySite clients',
-    'JWT_ISSUER': 'MySite server',
+    'JWT_AUDIENCE': 'TMSFTT clients',
+    'JWT_ISSUER': 'TMSFTT server',
     'JWT_AUTH_COOKIE': 'ACCESS_TOKEN',
-    # 'JWT_ALLOW_REFRESH': True,
+    'JWT_ALLOW_REFRESH': True,
     # JWT expires in 18 hours.
     'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=12),
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'auth.utils.jwt_response_payload_handler',
 }
 JWT_AUTH_COOKIE = JWT_AUTH['JWT_AUTH_COOKIE']
 JWT_AUTH_COOKIE_WHITELIST = (

@@ -126,7 +126,13 @@ venv.bak/
 dmypy.json
 
 pyenv/
-.vscode
+.idea/
+.vscode/
+*.swp
+media/
+protected-files/
+files/
+tmp/
 
 # Pyre type checker
 .pyre/

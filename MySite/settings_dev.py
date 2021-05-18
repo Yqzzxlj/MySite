@@ -1,3 +1,5 @@
+from django.core.cache import cache
+
 from .settings import *
 
 
@@ -11,7 +13,7 @@ SECRET_KEY = '0jn@1=-wjx6zt)vg7^s9=g-yads8qrwy5*(r#a$*pbf2o11d(h'
 DEV_INSTALLED_APPS = [
     # 'corsheaders',
     'debug_toolbar',
-    # 'mock_cas',
+    'mock_cas',
 
     # 'data_migration',
 ]
@@ -52,7 +54,53 @@ DATABASES = {
     }
 }
 
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} {filename}(L{lineno:d}) {process:d}: {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    }
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = []
+
+# Dynamic contents
+MEDIA_ROOT = os.path.join(BASE_DIR, 'protected-files')
+MEDIA_URL = '/media/'
+
+# CAS dev settings
+CAS_SERVER_URL = 'http://localhost:8000/mock-cas/'
+CAS_IGNORE_REFERER = True
+CAS_REDIRECT_URL = '/'
+CAS_LOGOUT_COMPLETELY = True
+
+# CORS settings
+CORS_ORIGIN_ALLOW_ALL = True
+
+cache.clear()

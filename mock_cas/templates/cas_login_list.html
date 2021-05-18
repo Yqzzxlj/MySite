@@ -1,0 +1,35 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <h1>List of users can be logged in</h1>
+        <p>DEMO PURPOSE ONLY, the authentication will be performed by CAS in production server.</p>
+        <p>You have to create users yourself first, all users in database will be displayed below.</p>
+        <ul>
+            {% for user in users %}
+            <li>
+                {% if not service %}
+                <form action="/api/login/" method="POST">
+                {% else %}
+                <form action="{{ service }}" method="GET">
+                {% endif %}
+                  <input type="hidden" name="ticket" value="{{ user }}">
+                  <input type="hidden" name="service" value="{{ service }}">
+                  <button type="submit">Login as {{ user.username }}</button>
+                </form>
+            </li>
+            {% endfor %}
+            <li>
+                {% if not service %}
+                <form action="/api/login/" method="POST">
+                {% else %}
+                <form action="{{ service }}" method="GET">
+                {% endif %}
+                  <input type="hidden" name="ticket" value="invalid">
+                  <input type="hidden" name="service" value="{{ service }}">
+                  <button type="submit">Attemp Invalid login</button>
+                </form>
+            </li>
+        </ul>
+    </body>
+</html>
